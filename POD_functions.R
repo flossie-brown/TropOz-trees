@@ -39,17 +39,20 @@ POD_extract <- function(df_list){
 #  make a dataframe with yield relationships
 #--------------------------------------------------
 
-yield_features <- function(dataframe, POD_variable){
+yield_features <- function(dataframe, POD_variable, name){
     
     biomass_relationship <- lm(Biomass ~ POD_variable, data = dataframe)
-    r.squared <- summary(biomass_relationship)$r.squared
     Intercept <- summary(biomass_relationship)$coefficients[1]
     Slope <-  summary(biomass_relationship)$coefficients[2]
-    Yield_relationship <- Slope / Intercept
+
+    yield_relationship <- lm(Biomass/Intercept ~ POD_variable, data = dataframe)
+    r.squared <- summary(yield_relationship)$r.squared
+    Yield_relationship <- summary(yield_relationship)$coefficients[2]
     
     Yield_dataframe <- data.frame(r.squared = r.squared,
                                   Intercept = Intercept, Slope = Slope, 
-                                  Yield_relationship = Yield_relationship)
+                                  Yield_relationship = Yield_relationship,
+                                   POD_type = name)
     
     return(Yield_dataframe)
     
